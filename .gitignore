@@ -1,0 +1,22 @@
+# Original source archives — their contents are already extracted and committed
+# under site/docs/, so keeping the zips would just double the repo size.
+*.zip
+
+# Loose source copies at the repo root; the canonical versions live in site/docs/
+# and site/assets/img/.
+/FBA Constitution.pdf
+/SUG Constitution.pdf
+/SUG Constitution 2025 edited.pdf
+/fba-logo.jpg
+
+# Local scratch
+_extracted/
+_shots/
+
+# OS / editor noise
+.DS_Store
+Thumbs.db
+*~
+*.swp
+.idea/
+.vscode/

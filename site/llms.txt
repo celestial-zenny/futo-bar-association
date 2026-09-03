@@ -1,0 +1,75 @@
+# FUTO Bar Association (FBA)
+
+> The FUTO Bar Association is the student law association of the Federal University of
+> Technology Owerri (FUTO), Imo State, Nigeria. It operates under the Judiciary of the
+> FUTO Students' Union Government (SUG) and is governed by its own written constitution.
+> Motto: Justice, Equity, Fairness.
+
+The association trains and represents intending barristers at FUTO. It runs the SUG School
+of Paralegal Studies (SSPS), whose Level 1 "I-Barrister" classes teach the basics of law,
+student rights and campus political entry. This site publishes the association's governing
+documents and every SSPS study material as free downloads.
+
+Key facts:
+- Name: FUTO Bar Association, abbreviated FBA. Named in Article 1 of its constitution.
+- Parent body: Federal University of Technology, Owerri — Students' Union Government.
+- Address: Federal University of Technology, P.M.B. 1526, Owerri, Imo State, Nigeria.
+- Contact: futobarassociation@gmail.com
+- Constitution: 14 articles, reviewed by the Constitution Review Committee of the 2020/2021
+  academic session and approved by the House.
+- Principal offices: President, Vice President, Secretary General (who serves as
+  Attorney-General of the association), Treasurer, Public Relations Officer.
+- Stated objective: to preserve, protect and defend the rule of law in accordance with the
+  Human Rights Declaration of the Federal Republic of Nigeria and the constitution of the
+  Students' Union Government, among the students of FUTO.
+
+## Pages
+
+- [Home](https://futobarassociation.org/): Overview of the association, its executives, constitutions and study materials.
+- [About](https://futobarassociation.org/about.html): Preamble, name and standing, the seven aims and objectives, code of conduct, and the SSPS programme.
+- [Executives](https://futobarassociation.org/executives.html): The five principal offices and the duties each carries under Article 5, plus accountability mechanisms.
+- [Constitutions](https://futobarassociation.org/constitutions.html): The three governing documents with their full tables of contents.
+- [Study Materials](https://futobarassociation.org/study-materials.html): All 18 SSPS files grouped by week, plus the Level 1 course outline and lecture timetable.
+
+## Constitutions
+
+- [FBA Constitution (PDF, 11 pages)](https://futobarassociation.org/docs/constitutions/fba-constitution.pdf): The constitution of the FUTO Bar Association itself.
+- [SUG Constitution (PDF, 32 pages)](https://futobarassociation.org/docs/constitutions/sug-constitution.pdf): Scanned constitution of the FUTO Students' Union Government.
+- [SUG Constitution 2025 (PDF, 28 pages)](https://futobarassociation.org/docs/constitutions/sug-constitution-2025-edited.pdf): Edited, searchable 2025 text of the SUG constitution, 28 articles.
+
+## Study materials — course information
+
+- [SSPS Courses Outline, page 1 (JPEG)](https://futobarassociation.org/docs/study-materials/course-information/ssps-course-outline-page-1.jpg): Level 1 goal and syllabi for JCY 111, LAW 112, EPR 113.
+- [SSPS Courses Outline, page 2 (JPEG)](https://futobarassociation.org/docs/study-materials/course-information/ssps-course-outline-page-2.jpg): Syllabi for PTS 114, ADV 115, LDR 101.
+- [SSPS Lecture Timetable (JPEG)](https://futobarassociation.org/docs/study-materials/course-information/ssps-lecture-timetable.jpg): Wednesday to Friday, 3:00–6:00.
+
+Level 1 courses: JCY 111 Judicial Analysis & Litigation; LAW 112 Jurisprudence &
+Constitutional Law; EPR 113 Professional Ethics & Advocacy; PTS 114 Legislative Process &
+Time Management; ADV 115 Advocacy, Activism & Petitioning; LDR 101 Leadership 101.
+
+## Study materials — lecturers' notes
+
+- [Sources of Law (PDF, 9 pages)](https://futobarassociation.org/docs/study-materials/lecturers-notes/sources-of-law.pdf): Hierarchy of Nigerian law from the 1999 Constitution to customary and Sharia law.
+- [Judicial Analysis and Litigation (PDF, 7 pages)](https://futobarassociation.org/docs/study-materials/lecturers-notes/judicial-analysis-and-litigation.pdf): JCY 111 — etymology and ranks of the judiciary.
+- [Roles of Court Officers and Clerks (PDF, 12 pages)](https://futobarassociation.org/docs/study-materials/lecturers-notes/roles-of-court-officers-and-clerks.pdf): JCY 111 — court administration and judicial support functions.
+- [Case Examples and Skeleton Arguments (PDF, 3 pages)](https://futobarassociation.org/docs/study-materials/lecturers-notes/case-examples-and-skeleton-arguments.pdf): Moot court preparation using the IRAC method.
+- [Steps in Civil and Criminal Litigation (DOCX)](https://futobarassociation.org/docs/study-materials/lecturers-notes/steps-in-civil-and-criminal-litigation.docx): Nigerian civil and criminal procedure.
+
+## Study materials — weekly notes
+
+- [Week 1 (PDF, 5 pages)](https://futobarassociation.org/docs/study-materials/week-01/week-01-notes.pdf): Responsibilities of a barrister.
+- [Week 2 (PDF, 3 pages)](https://futobarassociation.org/docs/study-materials/week-02/week-02-notes.pdf): FBA sitting and self-introduction.
+- [Week 3 (PDF, 6 pages)](https://futobarassociation.org/docs/study-materials/week-03/week-03-notes.pdf): Advocacy, activism and petitioning (ADV 115).
+- [Week 4 (PDF, 6 pages)](https://futobarassociation.org/docs/study-materials/week-04/week-04-notes.pdf): Definition and characteristics of law (LAW 112).
+- [Week 5 (PDF, 5 pages)](https://futobarassociation.org/docs/study-materials/week-05/week-05-notes.pdf): Activism, and how it differs from advocacy (ADV 115).
+- [Week 6 (PDF, 3 pages)](https://futobarassociation.org/docs/study-materials/week-06/week-06-notes.pdf): Lawyer and client relationship (EPR 113).
+- [Week 7 (PDF, 6 pages)](https://futobarassociation.org/docs/study-materials/week-07/week-07-notes.pdf): Basic communication skills and key elements (EPR 113).
+- [Week 8 (PDF, 5 pages)](https://futobarassociation.org/docs/study-materials/week-08/week-08-notes.pdf): Public speaking (EPR 113).
+- [Week 9 (PDF, 4 pages)](https://futobarassociation.org/docs/study-materials/week-09/week-09-notes.pdf): Strategies for speaking up and taking action (ADV 115).
+- [Week 10 (PDF, 3 pages)](https://futobarassociation.org/docs/study-materials/week-10/week-10-notes.pdf): Latin maxims.
+
+## Notes
+
+- Executive officer names and photographs are not yet published; the site shows placeholder
+  cards for the five principal offices until the Executive Council confirms them.
+- All documents are published for the information of members and may be downloaded freely.

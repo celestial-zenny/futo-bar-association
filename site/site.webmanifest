@@ -1,0 +1,28 @@
+{
+  "name": "FUTO Bar Association",
+  "short_name": "FBA",
+  "description": "Constitutions, executives and SSPS study materials of the FUTO Bar Association, the student law association of the Federal University of Technology Owerri.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#0b4022",
+  "lang": "en",
+  "icons": [
+    {
+      "src": "/assets/img/favicon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/assets/img/fba-logo-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "/assets/img/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    }
+  ]
+}

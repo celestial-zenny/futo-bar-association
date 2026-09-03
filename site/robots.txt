@@ -1,0 +1,8 @@
+# robots.txt — FUTO Bar Association
+# All content on this site is published for members and the public.
+
+User-agent: *
+Allow: /
+Disallow: /404.html
+
+Sitemap: https://futobarassociation.org/sitemap.xml
