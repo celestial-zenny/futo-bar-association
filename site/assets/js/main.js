@@ -1,8 +1,8 @@
 /* ==========================================================================
    FUTO Bar Association — site behaviour
-   Two features only: the mobile navigation toggle and the study-material
-   tabs. Both are progressive enhancements over markup that already works
-   without JavaScript.
+   The mobile navigation toggle and tabs (study materials, admin dashboard).
+   Both are progressive enhancements over markup that already works without
+   JavaScript. Data-driven pages load fba.js and their own script on top.
    ========================================================================== */
 (function () {
   "use strict";
@@ -36,7 +36,7 @@
 
     // Reset state when the layout returns to the desktop breakpoint.
     window.addEventListener("resize", function () {
-      if (window.innerWidth > 860) setOpen(false);
+      if (window.innerWidth > 1080) setOpen(false);
     });
   }
 

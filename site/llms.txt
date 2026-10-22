@@ -14,7 +14,7 @@ Key facts:
 - Name: FUTO Bar Association, abbreviated FBA. Named in Article 1 of its constitution.
 - Parent body: Federal University of Technology, Owerri — Students' Union Government.
 - Address: Federal University of Technology, P.M.B. 1526, Owerri, Imo State, Nigeria.
-- Contact: futobarassociation@gmail.com
+- Contact: futobarassociationofficial@gmail.com
 - Constitution: 14 articles, reviewed by the Constitution Review Committee of the 2020/2021
   academic session and approved by the House.
 - Principal offices: President, Vice President, Secretary General (who serves as
@@ -30,6 +30,10 @@ Key facts:
 - [Executives](https://futobarassociation.org/executives.html): The five principal offices and the duties each carries under Article 5, plus accountability mechanisms.
 - [Constitutions](https://futobarassociation.org/constitutions.html): The three governing documents with their full tables of contents.
 - [Study Materials](https://futobarassociation.org/study-materials.html): All 18 SSPS files grouped by week, plus the Level 1 course outline and lecture timetable.
+- [Legal Aid](https://futobarassociation.org/legal-aid.html): The FBA Legal Aid Clinic. FUTO students report a legal problem with their matric number, choose a student barrister (or let the FBA choose), receive a reference number and track the case status online. Representation is free.
+- [Barristers](https://futobarassociation.org/barristers.html): Public profiles of the association's student barristers, with the areas each handles and whether they are taking new cases.
+- [Blog](https://futobarassociation.org/blog.html): News posts and legal articles by members, filterable by type and by month. Individual posts are at /post.html?slug=….
+- [Archive](https://futobarassociation.org/archive.html): Anonymised summaries of resolved legal aid matters, and every published post grouped by month.
 
 ## Constitutions
 
