@@ -1295,6 +1295,10 @@ tbody tr:last-child td {
   margin-bottom: 1rem;
 }
 
+.site-footer address {
+  overflow-wrap: anywhere;
+}
+
 .site-footer a {
   color: #dcebe1;
   text-decoration: none;
@@ -1908,6 +1912,179 @@ address {
   padding-left: 1.1em;
   margin: 0;
   font-size: 0.94rem;
+}
+
+.badge--requested {
+  background: #f3ecfa;
+  color: #5b3488;
+  border-color: #dfd0ef;
+}
+
+.barrister-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.25rem;
+}
+
+.barrister {
+  display: flex;
+  gap: 1.1rem;
+  align-items: flex-start;
+}
+
+.barrister__photo {
+  flex: none;
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid var(--gold-400);
+  background: var(--green-050);
+}
+
+.barrister__photo--initials {
+  display: grid;
+  place-items: center;
+  font-family: var(--font-display);
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--green-800);
+}
+
+.barrister__body {
+  min-width: 0;
+}
+
+.barrister__body h3 {
+  margin-bottom: 0.15em;
+}
+
+.barrister__level {
+  margin: 0 0 0.35rem;
+  font-size: 0.9rem;
+  color: var(--ink-500);
+}
+
+.barrister__availability {
+  margin: 0 0 0.6rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.barrister__availability--on {
+  color: var(--green-700);
+}
+
+.barrister__availability--off {
+  color: var(--ink-500);
+}
+
+.barrister__areas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin: 0 0 0.75rem;
+  padding: 0;
+  list-style: none;
+}
+
+.barrister__areas li + li {
+  margin-top: 0;
+}
+
+.barrister__bio {
+  font-size: 0.92rem;
+  color: var(--ink-700);
+  white-space: pre-line;
+}
+
+@media (max-width: 420px) {
+  .barrister {
+    flex-direction: column;
+  }
+}
+
+[data-barrister-preview] .barrister {
+  margin-bottom: 1.1rem;
+  box-shadow: none;
+  background: var(--paper-alt);
+}
+
+.case-status__choose {
+  border-top: 1px solid var(--line);
+  padding-top: 1rem;
+  margin-top: 1rem;
+}
+
+.request-list {
+  display: grid;
+  gap: 1.25rem;
+}
+
+.request h3 {
+  font-size: 1.15rem;
+}
+
+.check-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 0.5rem 1rem;
+}
+
+.check-grid .field--check label {
+  font-size: 0.92rem;
+}
+
+fieldset.field {
+  border: 0;
+  padding: 0;
+  margin: 0 0 1.1rem;
+  min-width: 0;
+}
+
+fieldset.field legend {
+  font-weight: 600;
+  font-size: 0.94rem;
+  margin-bottom: 0.5rem;
+  padding: 0;
+}
+
+.photo-field {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  margin-bottom: 1.1rem;
+}
+
+.photo-field .field {
+  margin: 0;
+  min-width: 0;
+}
+
+.photo-field input[type="file"] {
+  padding: 0.45rem;
+  font-size: 0.88rem;
+}
+
+.login-box {
+  margin: 0 0 1.25rem;
+  padding: 0.9rem 1rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--paper-alt);
+  font-size: 0.92rem;
+}
+
+.login-box p {
+  margin: 0 0 0.5rem;
+}
+
+.login-box p:last-child {
+  margin: 0;
+}
+
+.narrow-form {
+  max-width: 720px;
 }
 
 /* Elements toggled by script (textarea, flex rows) must stay hidden even when

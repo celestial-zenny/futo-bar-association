@@ -1,6 +1,7 @@
 /* ==========================================================================
-   FUTO Bar Association — admin dashboard
-   Sign-in, case assignment, barristers, blog posts and the case archive.
+   FUTO Bar Association — portal for admins and barristers
+   Admins: cases, barristers (with login invites), posts and the case archive.
+   Barristers: accept or decline requests, update their cases and profile.
    Every write is checked again by row-level security in the database, so
    this page only decides what to show; it is not the security boundary.
    ========================================================================== */
@@ -11,7 +12,8 @@
   var db = FBA.db;
   var esc = FBA.esc;
 
-  var state = { cases: [], barristers: [], posts: [], summaries: [] };
+  var state = { cases: [], barristers: [], posts: [], summaries: [], mine: [], me: null };
+  var PHOTO_BUCKET = "barrister-photos";
 
   /* --------------------------------------------------------------- helpers */
   function $(selector, root) {
@@ -60,6 +62,49 @@
 
   function emptyRow(cols, text) {
     return '<tr><td colspan="' + cols + '" class="admin-table__empty">' + esc(text) + "</td></tr>";
+  }
+
+  // Area checkboxes are built here and read back by areasFrom(), because the
+  // generic form helpers only handle one value per field name.
+  function renderAreas(box, selected) {
+    box.innerHTML = Object.keys(FBA.CATEGORIES).map(function (key) {
+      var id = (box.closest("[data-dialog]") ? "bd" : "mp") + "-area-" + key;
+      return '<div class="field--check"><input type="checkbox" id="' + id + '" data-area="' + key + '"' +
+        ((selected || []).indexOf(key) > -1 ? " checked" : "") + '><label for="' + id + '">' +
+        esc(FBA.shortCategory(key)) + "</label></div>";
+    }).join("");
+  }
+
+  function areasFrom(box) {
+    return Array.prototype.filter.call(box.querySelectorAll("[data-area]"), function (c) { return c.checked; })
+      .map(function (c) { return c.getAttribute("data-area"); });
+  }
+
+  function photoPreview(box, url, name) {
+    box.innerHTML = url
+      ? '<img class="barrister__photo" src="' + esc(url) + '" width="96" height="96" alt="Current photo of ' + esc(name || "barrister") + '">'
+      : '<span class="barrister__photo barrister__photo--initials" aria-hidden="true">?</span>';
+  }
+
+  // Uploads a chosen photo and returns its public URL, or null if none chosen.
+  async function uploadPhoto(input, folder) {
+    var file = input.files && input.files[0];
+    if (!file) return { url: null };
+    if (file.size > 2 * 1024 * 1024) return { error: { message: "That photo is larger than 2 MB." } };
+    var ext = (file.type.split("/")[1] || "jpg").replace("jpeg", "jpg");
+    var path = folder + "/" + Date.now() + "." + ext;
+    var up = await db.storage.from(PHOTO_BUCKET).upload(path, file, { contentType: file.type });
+    if (up.error) return { error: up.error };
+    return { url: db.storage.from(PHOTO_BUCKET).getPublicUrl(path).data.publicUrl };
+  }
+
+  async function functionError(error) {
+    try {
+      var body = await error.context.json();
+      return { message: body.error || error.message };
+    } catch (e) {
+      return error;
+    }
   }
 
   function badge(status) {
@@ -149,7 +194,7 @@
   /* ----------------------------------------------------------------- cases */
   function caseMatches(row, filter, query) {
     if (filter === "open" && (row.status === "resolved" || row.status === "closed")) return false;
-    if (filter && filter !== "open" && row.status !== filter) return false;
+    if (filter && filter !== "open" && FBA.caseStatus(row) !== filter) return false;
     if (!query) return true;
     return [row.reference, row.full_name, row.matric_number, row.title, row.email]
       .join(" ").toLowerCase().indexOf(query) > -1;
@@ -165,7 +210,7 @@
     var query = $("[data-case-search]").value.trim().toLowerCase();
     var rows = state.cases.filter(function (row) { return caseMatches(row, filter, query); });
 
-    var waiting = state.cases.filter(function (row) { return row.status === "new"; }).length;
+    var waiting = state.cases.filter(function (row) { return FBA.caseStatus(row) === "new"; }).length;
     $('[data-count="cases"]').textContent = waiting ? waiting + " new" : "";
 
     $("[data-cases-body]").innerHTML = rows.length
@@ -175,7 +220,7 @@
             '<td class="nowrap">' + esc(FBA.formatDate(row.created_at)) + "</td>" +
             "<td>" + esc(row.full_name) + '<br><span class="muted">' + esc(row.department) + ", " + esc(row.level) + "</span></td>" +
             "<td>" + esc(row.title) + '<br><span class="muted">' + esc(FBA.CATEGORIES[row.category] || row.category) + "</span></td>" +
-            "<td>" + badge(row.status) + "</td>" +
+            "<td>" + badge(FBA.caseStatus(row)) + "</td>" +
             "<td>" + (row.barrister_id ? esc(barristerName(row.barrister_id)) : '<span class="muted">Unassigned</span>') + "</td>" +
             '<td><button class="btn btn--outline btn--small" type="button" data-open-case="' + esc(row.id) + '">Open</button></td>' +
             "</tr>";
@@ -197,9 +242,11 @@
       ["Phone", row.phone],
       ["Category", FBA.CATEGORIES[row.category] || row.category],
       ["Submitted", FBA.formatDate(row.created_at, true)],
+      ["SUG Judiciary suit no.", row.judiciary_suit_number || "Not filed / not given"],
       ["Title", row.title],
       ["What happened", row.description]
     ];
+    if (row.barrister_note) facts.push(["Barrister's notes", row.barrister_note]);
     $("[data-case-facts]", d.el).innerHTML = facts.map(function (f) {
       return "<div><dt>" + esc(f[0]) + "</dt><dd>" + esc(f[1]) + "</dd></div>";
     }).join("");
@@ -208,9 +255,16 @@
       .filter(function (b) { return b.active || b.id === row.barrister_id; })
       .map(function (b) { return [b.id, b.full_name + (b.active ? "" : " (inactive)")]; }));
     options($("[data-barrister-options]", d.el), choices, row.barrister_id);
-    options($("[data-status-options]", d.el), Object.keys(FBA.STATUSES).map(function (k) {
+    options($("[data-status-options]", d.el), Object.keys(FBA.STATUSES).filter(function (k) {
+      return k !== "requested";
+    }).map(function (k) {
       return [k, FBA.STATUSES[k]];
     }), row.status);
+
+    var requested = $("[data-case-requested]", d.el);
+    requested.hidden = FBA.caseStatus(row) !== "requested";
+    requested.textContent = "The student chose " + barristerName(row.barrister_id) +
+      ", who hasn't accepted yet. Choosing a different barrister here assigns the case to them directly.";
 
     $("[data-case-summary]", d.el).onclick = function () {
       d.el.close();
@@ -247,10 +301,12 @@
           var open = state.cases.filter(function (c) {
             return c.barrister_id === b.id && c.status !== "resolved" && c.status !== "closed";
           }).length;
+          var level = b.level ? '<br><span class="muted">' + esc(b.level) + "</span>" : "";
           return "<tr>" +
-            "<td><strong>" + esc(b.full_name) + "</strong></td>" +
+            "<td><strong>" + esc(b.full_name) + "</strong>" + level + "</td>" +
             "<td>" + esc(b.email || "") + (b.email && b.phone ? "<br>" : "") + esc(b.phone || "") + "</td>" +
-            "<td>" + esc(b.level || "") + "</td>" +
+            "<td>" + (b.user_id ? '<span class="badge badge--resolved">Linked</span>'
+              : b.email ? '<span class="muted">Not signed in yet</span>' : '<span class="muted">No email</span>') + "</td>" +
             "<td>" + open + "</td>" +
             "<td>" + (b.active ? '<span class="badge badge--resolved">Available</span>' : '<span class="badge badge--closed">Inactive</span>') + "</td>" +
             '<td><button class="btn btn--outline btn--small" type="button" data-open-barrister="' + esc(b.id) + '">Edit</button></td>' +
@@ -261,7 +317,17 @@
 
   function openBarrister(b) {
     var isNew = !b.id;
-    dialogs.barrister.open(b, async function (v) {
+    var d = dialogs.barrister;
+    var photoInput = $("[data-photo-input]", d.el);
+    var areas = $("[data-areas]", d.el);
+
+    d.open(b, async function (v) {
+      var photo = await uploadPhoto(photoInput, "admin");
+      if (photo.error) return photo.error;
+      v.areas = areasFrom(areas);
+      v.bio = v.bio || "";
+      if (photo.url) v.photo_url = photo.url;
+      if (v.email) v.email = v.email.toLowerCase();
       var res = isNew
         ? await db.from("barristers").insert(v).select().single()
         : await db.from("barristers").update(v).eq("id", b.id).select().single();
@@ -271,7 +337,7 @@
       state.barristers.sort(function (x, y) { return x.full_name.localeCompare(y.full_name); });
       renderBarristers();
       renderCases();
-      toast("Barrister saved.");
+      toast(isNew && res.data.email ? "Barrister saved. Open them again to send a login invite." : "Barrister saved.");
     }, isNew ? null : async function () {
       var res = await db.from("barristers").delete().eq("id", b.id);
       if (res.error) return res.error;
@@ -280,6 +346,44 @@
       renderBarristers();
       renderCases();
       toast("Barrister deleted. Their cases are now unassigned.");
+    });
+
+    // After open(): it resets the form, which would clear these.
+    renderAreas(areas, b.areas);
+    photoPreview($("[data-photo-preview]", d.el), b.photo_url, b.full_name);
+
+    var login = $("[data-login-box]", d.el);
+    if (b.user_id) {
+      login.innerHTML = "<p><strong>Login linked.</strong> " + esc(b.full_name) +
+        " signs in at <a href=\"/admin/\">/admin/</a> to accept cases and edit their profile.</p>";
+    } else if (!isNew && b.email) {
+      login.innerHTML = "<p>No login yet. Send an invite to <strong>" + esc(b.email) +
+        '</strong>; they set a password from the email and can then accept cases.</p>' +
+        '<button class="btn btn--outline btn--small" type="button" data-send-invite>Send login invite</button>';
+      $("[data-send-invite]", login).onclick = async function () {
+        this.disabled = true;
+        var res = await db.functions.invoke("invite-user", {
+          body: { email: b.email, role: "barrister", redirect_to: window.location.origin + "/admin/" }
+        });
+        this.disabled = false;
+        if (res.error) {
+          formStatus(d.form, errorText(await functionError(res.error)));
+          return;
+        }
+        formStatus(d.form, res.data.message, "ok");
+      };
+    } else {
+      login.innerHTML = '<p class="field__hint">Add an email address and save to be able to send a login invite.</p>';
+    }
+  }
+
+  function openInviteAdmin() {
+    dialogs.invite.open({ full_name: "", email: "" }, async function (v) {
+      var res = await db.functions.invoke("invite-user", {
+        body: { email: v.email, full_name: v.full_name, role: "admin", redirect_to: window.location.origin + "/admin/" }
+      });
+      if (res.error) return functionError(res.error);
+      toast(res.data.message);
     });
   }
 
@@ -413,9 +517,10 @@
   }
 
   function initDashboard() {
-    ["case", "barrister", "post", "summary"].forEach(function (name) {
+    ["case", "barrister", "post", "summary", "invite"].forEach(function (name) {
       dialogs[name] = dialog(name);
     });
+    $("[data-invite-admin]").addEventListener("click", openInviteAdmin);
 
     var filter = $("[data-case-filter]");
     Object.keys(FBA.STATUSES).forEach(function (k) {
@@ -437,17 +542,192 @@
       if (t.dataset.openBarrister) openBarrister(state.barristers.find(function (x) { return x.id === t.dataset.openBarrister; }));
       if (t.dataset.openPost) openPost(state.posts.find(function (x) { return x.id === t.dataset.openPost; }));
       if (t.dataset.openSummary) openSummary(state.summaries.find(function (x) { return x.id === t.dataset.openSummary; }));
-      if (t.dataset["new"] === "barrister") openBarrister({ full_name: "", email: "", phone: "", level: "", active: true });
+      if (t.dataset["new"] === "barrister") openBarrister({ full_name: "", email: "", phone: "", level: "", bio: "", areas: [], active: true });
       if (t.dataset["new"] === "post") openPost({ title: "", slug: "", kind: "blog", author_name: "FUTO Bar Association", excerpt: "", body: "", published: false });
       if (t.dataset["new"] === "summary") openSummary({ title: "", category: "other", summary: "", outcome: "", published: false });
+    });
+  }
+
+  /* --------------------------------------------------------- barrister view */
+  var barristerReady = false;
+
+  function caseFacts(row) {
+    var facts = [
+      ["Category", FBA.CATEGORIES[row.category] || row.category],
+      ["Submitted", FBA.formatDate(row.created_at, true)],
+      ["Student", row.full_name + " · " + row.department + ", " + row.level],
+      ["Matric number", row.matric_number]
+    ];
+    if (row.email) facts.push(["Email", row.email], ["Phone", row.phone]);
+    if (row.judiciary_suit_number) facts.push(["SUG Judiciary suit no.", row.judiciary_suit_number]);
+    facts.push(["Title", row.title], ["What happened", row.description]);
+    return facts.map(function (f) {
+      return "<div><dt>" + esc(f[0]) + "</dt><dd>" + esc(f[1]) + "</dd></div>";
+    }).join("");
+  }
+
+  function renderMine() {
+    var requests = state.mine.filter(function (c) { return c.status === "requested"; });
+    var mine = state.mine.filter(function (c) { return c.status !== "requested"; });
+    $('[data-count="requests"]').textContent = requests.length ? String(requests.length) : "";
+
+    $("[data-requests]").innerHTML = requests.length
+      ? requests.map(function (c) {
+          return '<article class="card request">' +
+            '<p class="post-card__meta"><span class="tag">' + esc(FBA.shortCategory(c.category)) + "</span> " +
+            esc(c.reference) + " · " + esc(FBA.formatDate(c.created_at)) + "</p>" +
+            '<dl class="case-facts">' + caseFacts(c) + "</dl>" +
+            '<div class="form__actions">' +
+            '<button class="btn btn--solid" type="button" data-accept="' + esc(c.id) + '">Accept case</button>' +
+            '<button class="btn btn--outline" type="button" data-decline="' + esc(c.id) + '">Decline</button>' +
+            "</div></article>";
+        }).join("")
+      : '<p class="post-list__empty">No requests right now. Students who choose you will appear here.</p>';
+
+    $("[data-mycases]").innerHTML = mine.length
+      ? mine.map(function (c) {
+          return '<article class="card request">' +
+            '<p class="post-card__meta">' + badge(c.status) + " " + esc(c.reference) + "</p>" +
+            "<h3>" + esc(c.title) + "</h3>" +
+            "<p>" + esc(c.full_name) + " · " + esc(c.phone || "") + "</p>" +
+            '<button class="btn btn--outline btn--small" type="button" data-open-mine="' + esc(c.id) + '">Open</button>' +
+            "</article>";
+        }).join("")
+      : '<p class="post-list__empty">You have no accepted cases yet.</p>';
+  }
+
+  function fillProfile() {
+    var form = $("[data-profile-form]");
+    var me = state.me;
+    ["full_name", "level", "bio", "email", "phone"].forEach(function (k) {
+      form.elements[k].value = me[k] || "";
+    });
+    form.elements.active.checked = !!me.active;
+    renderAreas($("[data-areas]", form), me.areas);
+    photoPreview($("[data-photo-preview]", form), me.photo_url, me.full_name);
+  }
+
+  async function loadMine() {
+    var results = await Promise.all([
+      db.rpc("barrister_cases"),
+      db.from("barristers").select("*").eq("id", state.myId).single()
+    ]);
+    if (results[0].error || results[1].error) {
+      toast("Couldn't load everything: " + errorText(results[0].error || results[1].error));
+    }
+    state.mine = results[0].data || [];
+    if (results[1].data) state.me = results[1].data;
+    renderMine();
+    if (state.me) fillProfile();
+  }
+
+  function openMine(id) {
+    var row = state.mine.find(function (c) { return c.id === id; });
+    if (!row) return;
+    var d = dialogs.mycase;
+    $('[data-field-text="reference"]', d.el).textContent = row.reference;
+    $("[data-case-facts]", d.el).innerHTML = caseFacts(row);
+    d.open(row, async function (v) {
+      var res = await db.rpc("barrister_update_case", {
+        p_case_id: row.id, p_status: v.status, p_update_note: v.update_note, p_barrister_note: v.barrister_note
+      });
+      if (res.error) return res.error;
+      Object.assign(row, { status: v.status, update_note: v.update_note, barrister_note: v.barrister_note });
+      renderMine();
+      toast("Case " + row.reference + " updated.");
+    });
+  }
+
+  async function respond(id, accept) {
+    var message = null;
+    if (accept) {
+      if (!window.confirm("Accept this case? The student will see your email and phone number.")) return;
+    } else {
+      message = window.prompt("Decline this case? Optionally tell the student why (they'll be asked to choose someone else):", "");
+      if (message === null) return;
+    }
+    var res = await db.rpc("barrister_respond", { p_case_id: id, p_accept: accept, p_message: message });
+    if (res.error) {
+      toast(errorText(res.error));
+      return;
+    }
+    toast(accept ? "Case accepted. It's now under My cases." : "Case declined.");
+    loadMine();
+  }
+
+  function initBarristerView() {
+    dialogs.mycase = dialog("mycase");
+    document.addEventListener("click", function (event) {
+      var t = event.target.closest("[data-accept], [data-decline], [data-open-mine]");
+      if (!t) return;
+      if (t.dataset.accept) respond(t.dataset.accept, true);
+      if (t.dataset.decline) respond(t.dataset.decline, false);
+      if (t.dataset.openMine) openMine(t.dataset.openMine);
+    });
+
+    var form = $("[data-profile-form]");
+    form.addEventListener("submit", async function (event) {
+      event.preventDefault();
+      formStatus(form, "");
+      var email = form.elements.email;
+      if (!email.checkValidity()) {
+        formStatus(form, "Email: " + email.validationMessage);
+        email.focus();
+        return;
+      }
+      var button = $('[type="submit"]', form);
+      button.disabled = true;
+      var session = (await db.auth.getSession()).data.session;
+      var photo = await uploadPhoto($("[data-photo-input]", form), session.user.id);
+      if (photo.error) {
+        button.disabled = false;
+        formStatus(form, errorText(photo.error));
+        return;
+      }
+      var res = await db.rpc("barrister_update_profile", {
+        p_level: form.elements.level.value,
+        p_bio: form.elements.bio.value,
+        p_areas: areasFrom($("[data-areas]", form)),
+        p_email: form.elements.email.value,
+        p_phone: form.elements.phone.value,
+        p_photo_url: photo.url || state.me.photo_url || null,
+        p_active: form.elements.active.checked
+      });
+      button.disabled = false;
+      if (res.error) {
+        formStatus(form, errorText(res.error));
+        return;
+      }
+      $("[data-photo-input]", form).value = "";
+      toast("Profile saved.");
+      loadMine();
     });
   }
 
   /* ------------------------------------------------------------------ auth */
   var dashboardReady = false;
 
+  function showBarrister() {
+    showView("barrister");
+    if (!barristerReady) {
+      barristerReady = true;
+      initBarristerView();
+    }
+    loadMine();
+  }
+
+  function showAdmin() {
+    showView("dashboard");
+    if (!dashboardReady) {
+      dashboardReady = true;
+      initDashboard();
+    }
+    loadAll();
+  }
+
   async function route(session) {
     var user = $("[data-user]");
+    var switcher = $("[data-switch-view]");
     if (!session) {
       user.hidden = true;
       showView("signin");
@@ -456,17 +736,22 @@
     user.hidden = false;
     $("[data-user-email]").textContent = session.user.email;
 
-    var check = await db.rpc("is_admin");
-    if (check.error || !check.data) {
-      showView("denied");
-      return;
-    }
-    showView("dashboard");
-    if (!dashboardReady) {
-      dashboardReady = true;
-      initDashboard();
-    }
-    loadAll();
+    // Links a newly invited barrister to their profile on first sign-in.
+    var results = await Promise.all([db.rpc("claim_barrister_profile"), db.rpc("is_admin")]);
+    state.myId = results[0].data || null;
+    var isAdmin = !results[1].error && results[1].data === true;
+
+    switcher.hidden = !(isAdmin && state.myId);
+    switcher.onclick = function () {
+      var toBarrister = !$('[data-view="barrister"]').hidden ? false : true;
+      switcher.textContent = toBarrister ? "Admin view" : "Barrister view";
+      if (toBarrister) showBarrister();
+      else showAdmin();
+    };
+
+    if (isAdmin) showAdmin();
+    else if (state.myId) showBarrister();
+    else showView("denied");
   }
 
   function initAuth() {

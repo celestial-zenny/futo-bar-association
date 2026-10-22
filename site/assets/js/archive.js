@@ -8,11 +8,6 @@
 
   var FBA = window.FBA;
 
-  function shortCategory(key) {
-    var label = FBA.CATEGORIES[key] || FBA.CATEGORIES.other;
-    return label.replace(/\s*\(.*\)$/, "");
-  }
-
   async function initCases() {
     var list = document.querySelector("[data-summary-list]");
     var filter = document.querySelector("[data-case-filter]");
@@ -21,7 +16,7 @@
     Object.keys(FBA.CATEGORIES).forEach(function (key) {
       var option = document.createElement("option");
       option.value = key;
-      option.textContent = shortCategory(key);
+      option.textContent = FBA.shortCategory(key);
       filter.appendChild(option);
     });
 
@@ -44,7 +39,7 @@
       list.innerHTML = shown.length
         ? shown.map(function (row) {
             return '<li class="summary card">' +
-              '<p class="post-card__meta"><span class="tag">' + FBA.esc(shortCategory(row.category)) + "</span> " +
+              '<p class="post-card__meta"><span class="tag">' + FBA.esc(FBA.shortCategory(row.category)) + "</span> " +
               '<time datetime="' + FBA.esc(row.published_at) + '">' + FBA.esc(FBA.formatDate(row.published_at)) + "</time></p>" +
               "<h3>" + FBA.esc(row.title) + "</h3>" +
               '<div class="prose">' + FBA.markdown(row.summary) + "</div>" +

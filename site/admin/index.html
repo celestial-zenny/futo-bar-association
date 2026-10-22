@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Admin | FUTO Bar Association</title>
+<title>Portal | FUTO Bar Association</title>
 <meta name="theme-color" content="#0b4022">
 <meta name="author" content="FUTO Bar Association">
 <meta name="robots" content="noindex, nofollow">
@@ -23,12 +23,13 @@
     <a class="brand" href="/">
       <img src="/assets/img/fba-logo.jpg" width="40" height="40" alt="FUTO Bar Association crest: a barrister's wig and gavel ringed by the words Justice, Equity, Fairness.">
       <span class="brand__text">
-        <span class="brand__name">FBA Admin</span>
-        <span class="brand__sub">Legal aid · Blog · Archive</span>
+        <span class="brand__name">FBA Portal</span>
+        <span class="brand__sub">Admins &amp; barristers</span>
       </span>
     </a>
     <div class="admin-user" data-user hidden>
       <span data-user-email></span>
+      <button class="btn btn--outline btn--small" type="button" data-switch-view hidden>Barrister view</button>
       <button class="btn btn--outline btn--small" type="button" data-sign-out>Sign out</button>
     </div>
   </div>
@@ -38,8 +39,8 @@
   <!-- ------------------------------------------------------------ sign in -->
   <section class="section" data-view="signin" hidden>
     <div class="wrap narrow">
-      <h1>Admin sign in</h1>
-      <p>For FUTO Bar Association administrators only.</p>
+      <h1>Sign in</h1>
+      <p>For FUTO Bar Association administrators and student barristers. Use the email your invite was sent to.</p>
       <form class="form card" data-signin-form novalidate>
         <div class="form__status" role="alert" aria-live="assertive" hidden></div>
         <div class="field">
@@ -77,8 +78,8 @@
   <!-- ---------------------------------------------------------- not admin -->
   <section class="section" data-view="denied" hidden>
     <div class="wrap narrow">
-      <h1>No admin access</h1>
-      <p>You are signed in, but this account has not been made an administrator. Ask an existing administrator to add you, then sign in again.</p>
+      <h1>No access yet</h1>
+      <p>You are signed in, but this account isn't linked to an administrator or a barrister profile. Ask an FBA administrator to add you using this exact email address, then sign in again.</p>
     </div>
   </section>
 
@@ -121,13 +122,16 @@
 
         <div class="tabs__panel" role="tabpanel" id="panel-barristers" aria-labelledby="tab-barristers" tabindex="0" hidden>
           <div class="toolbar">
-            <p>Student barristers who can be assigned to cases. Their name, email and phone are shown to the student once assigned.</p>
-            <button class="btn btn--solid btn--small" type="button" data-new="barrister">Add barrister</button>
+            <p>Students choose from these profiles on the Barristers page. Email and phone are only shown to a student once their case is accepted. Add a barrister's email, then send them a login invite so they can accept cases.</p>
+            <div class="form__actions">
+              <button class="btn btn--outline btn--small" type="button" data-invite-admin>Invite an admin</button>
+              <button class="btn btn--solid btn--small" type="button" data-new="barrister">Add barrister</button>
+            </div>
           </div>
           <div class="table-wrap">
             <table class="admin-table">
               <thead>
-                <tr><th scope="col">Name</th><th scope="col">Contact</th><th scope="col">Level</th><th scope="col">Open cases</th><th scope="col">Status</th><th scope="col"><span class="visually-hidden">Actions</span></th></tr>
+                <tr><th scope="col">Name</th><th scope="col">Contact</th><th scope="col">Login</th><th scope="col">Open cases</th><th scope="col">Status</th><th scope="col"><span class="visually-hidden">Actions</span></th></tr>
               </thead>
               <tbody data-barristers-body></tbody>
             </table>
@@ -167,6 +171,77 @@
     </div>
   </section>
 
+  <!-- ---------------------------------------------------- barrister view -->
+  <section class="section section--tight" data-view="barrister" hidden>
+    <div class="wrap">
+      <h1 class="visually-hidden">Barrister portal</h1>
+      <div class="tabs" data-tabs>
+        <div class="tabs__list" role="tablist" aria-label="Barrister sections">
+          <button class="tabs__tab" role="tab" id="tab-requests" aria-controls="panel-requests" type="button">Requests <span class="count" data-count="requests"></span></button>
+          <button class="tabs__tab" role="tab" id="tab-mycases" aria-controls="panel-mycases" type="button">My cases</button>
+          <button class="tabs__tab" role="tab" id="tab-profile" aria-controls="panel-profile" type="button">My profile</button>
+        </div>
+
+        <div class="tabs__panel" role="tabpanel" id="panel-requests" aria-labelledby="tab-requests" tabindex="0">
+          <p class="toolbar">Students who chose you. Their contact details are shared with you once you accept.</p>
+          <div class="request-list" data-requests></div>
+        </div>
+
+        <div class="tabs__panel" role="tabpanel" id="panel-mycases" aria-labelledby="tab-mycases" tabindex="0" hidden>
+          <div class="request-list" data-mycases></div>
+        </div>
+
+        <div class="tabs__panel" role="tabpanel" id="panel-profile" aria-labelledby="tab-profile" tabindex="0" hidden>
+          <form class="form card narrow-form" data-profile-form novalidate>
+            <div class="form__status" role="alert" aria-live="assertive" hidden></div>
+            <p>This is what students see on the <a href="/barristers.html" target="_blank" rel="noopener">Barristers page</a>. Your email and phone are only shown to students whose case you have accepted.</p>
+            <div class="photo-field" data-photo-field>
+              <div data-photo-preview></div>
+              <div class="field">
+                <label for="mp-photo">Profile photo</label>
+                <input id="mp-photo" type="file" accept="image/jpeg,image/png,image/webp" data-photo-input aria-describedby="mp-photo-hint">
+                <p class="field__hint" id="mp-photo-hint">A clear, square head-and-shoulders photo. JPEG, PNG or WebP, up to 2 MB.</p>
+              </div>
+            </div>
+            <div class="field">
+              <label for="mp-name">Name</label>
+              <input id="mp-name" name="full_name" type="text" disabled aria-describedby="mp-name-hint">
+              <p class="field__hint" id="mp-name-hint">Ask an administrator if your name needs changing.</p>
+            </div>
+            <div class="field">
+              <label for="mp-level">Level or role</label>
+              <input id="mp-level" name="level" type="text" maxlength="40" placeholder="e.g. 400 level, Secretary General">
+            </div>
+            <div class="field">
+              <label for="mp-bio">About you</label>
+              <textarea id="mp-bio" name="bio" rows="5" maxlength="1200" aria-describedby="mp-bio-hint"></textarea>
+              <p class="field__hint" id="mp-bio-hint">Your experience and the kind of help you give. Up to 1,200 characters.</p>
+            </div>
+            <fieldset class="field">
+              <legend>Areas you handle</legend>
+              <div class="check-grid" data-areas></div>
+            </fieldset>
+            <div class="form__grid">
+              <div class="field">
+                <label for="mp-email">Email for students</label>
+                <input id="mp-email" name="email" type="email" maxlength="200">
+              </div>
+              <div class="field">
+                <label for="mp-phone">Phone or WhatsApp</label>
+                <input id="mp-phone" name="phone" type="tel" maxlength="30">
+              </div>
+            </div>
+            <div class="field field--check">
+              <input id="mp-active" name="active" type="checkbox">
+              <label for="mp-active">I'm taking new cases (untick when you're busy, so students can't choose you)</label>
+            </div>
+            <button class="btn btn--solid" type="submit">Save profile</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <p class="toast" role="status" aria-live="polite" data-toast hidden></p>
 </main>
 
@@ -189,6 +264,7 @@
         <select id="cd-status" name="status" data-status-options></select>
       </div>
     </div>
+    <p class="note" data-case-requested hidden></p>
     <div class="field">
       <label for="cd-update">Update for the student</label>
       <textarea id="cd-update" name="update_note" rows="3" maxlength="2000" aria-describedby="cd-update-hint"></textarea>
@@ -232,10 +308,27 @@
       <label for="bd-level">Level or role</label>
       <input id="bd-level" name="level" type="text" maxlength="40" placeholder="e.g. 400 level, Secretary General">
     </div>
+    <div class="photo-field">
+      <div data-photo-preview></div>
+      <div class="field">
+        <label for="bd-photo">Profile photo</label>
+        <input id="bd-photo" type="file" accept="image/jpeg,image/png,image/webp" data-photo-input>
+        <p class="field__hint">JPEG, PNG or WebP, up to 2 MB. Barristers can also add their own.</p>
+      </div>
+    </div>
+    <div class="field">
+      <label for="bd-bio">About</label>
+      <textarea id="bd-bio" name="bio" rows="4" maxlength="1200"></textarea>
+    </div>
+    <fieldset class="field">
+      <legend>Areas they handle</legend>
+      <div class="check-grid" data-areas></div>
+    </fieldset>
     <div class="field field--check">
       <input id="bd-active" name="active" type="checkbox" checked>
-      <label for="bd-active">Available for new cases</label>
+      <label for="bd-active">Taking new cases (listed as available to students)</label>
     </div>
+    <div class="login-box" data-login-box></div>
     <div class="form__actions">
       <button class="btn btn--solid" type="submit" value="save">Save barrister</button>
       <button class="btn btn--danger" type="button" data-delete>Delete</button>
@@ -330,6 +423,60 @@
     <div class="form__actions">
       <button class="btn btn--solid" type="submit" value="save">Save summary</button>
       <button class="btn btn--danger" type="button" data-delete>Delete</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog class="dialog" data-dialog="invite" aria-labelledby="invite-dialog-title">
+  <form class="form" method="dialog" novalidate>
+    <div class="dialog__head">
+      <h2 id="invite-dialog-title">Invite an admin</h2>
+      <button class="dialog__close" type="button" data-close aria-label="Close">&times;</button>
+    </div>
+    <div class="form__status" role="alert" aria-live="assertive" hidden></div>
+    <p>Admins can see every case and manage barristers, posts and the archive. They get an email with a link to set their password.</p>
+    <div class="field">
+      <label for="ia-name">Name</label>
+      <input id="ia-name" name="full_name" type="text" required minlength="2" maxlength="120">
+    </div>
+    <div class="field">
+      <label for="ia-email">Email</label>
+      <input id="ia-email" name="email" type="email" required maxlength="200">
+    </div>
+    <div class="form__actions">
+      <button class="btn btn--solid" type="submit" value="save">Send invite</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog class="dialog dialog--wide" data-dialog="mycase" aria-labelledby="mycase-dialog-title">
+  <form class="form" method="dialog" novalidate>
+    <div class="dialog__head">
+      <h2 id="mycase-dialog-title">Case <span data-field-text="reference"></span></h2>
+      <button class="dialog__close" type="button" data-close aria-label="Close">&times;</button>
+    </div>
+    <div class="form__status" role="alert" aria-live="assertive" hidden></div>
+    <dl class="case-facts" data-case-facts></dl>
+    <div class="field">
+      <label for="mc-status">Status</label>
+      <select id="mc-status" name="status">
+        <option value="assigned">Accepted</option>
+        <option value="in_progress">In progress</option>
+        <option value="resolved">Resolved</option>
+      </select>
+    </div>
+    <div class="field">
+      <label for="mc-update">Update for the student</label>
+      <textarea id="mc-update" name="update_note" rows="3" maxlength="2000" aria-describedby="mc-update-hint"></textarea>
+      <p class="field__hint" id="mc-update-hint">Shown to the student when they check their case status.</p>
+    </div>
+    <div class="field">
+      <label for="mc-note">Your notes</label>
+      <textarea id="mc-note" name="barrister_note" rows="4" maxlength="2000" aria-describedby="mc-note-hint"></textarea>
+      <p class="field__hint" id="mc-note-hint">Visible to you and FBA administrators, not the student.</p>
+    </div>
+    <div class="form__actions">
+      <button class="btn btn--solid" type="submit" value="save">Save</button>
     </div>
   </form>
 </dialog>

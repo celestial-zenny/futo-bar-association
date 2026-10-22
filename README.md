@@ -48,10 +48,11 @@ site/
 ├── constitutions.html      Three PDFs + tables of contents
 ├── study-materials.html    Tabbed file library + course outline + timetable
 ├── legal-aid.html          Legal aid clinic: report a case, check its status
+├── barristers.html         Public barrister profiles; "Choose" opens the case form
 ├── blog.html               Blog posts and legal articles, month archive sidebar
 ├── post.html               A single post (?slug=…)
 ├── archive.html            Anonymised case summaries + article archive by month
-├── admin/index.html        Admin dashboard (sign-in required, not indexed)
+├── admin/index.html        Portal for admins and barristers (sign-in, not indexed)
 ├── 404.html                Styled not-found page
 ├── favicon.ico             16/32/48px, generated from the FBA logo
 ├── robots.txt
@@ -62,10 +63,11 @@ site/
 │   ├── css/styles.css      Single stylesheet
 │   ├── js/main.js          Nav toggle + tabs
 │   ├── js/fba.js           Supabase client, labels, safe Markdown renderer
-│   ├── js/legal-aid.js     Case form + status lookup
+│   ├── js/legal-aid.js     Case form, barrister choice, status lookup
+│   ├── js/barristers.js    Barrister directory
 │   ├── js/blog.js          Blog list + single post
 │   ├── js/archive.js       Case and article archive
-│   ├── js/admin.js         Admin dashboard
+│   ├── js/admin.js         Portal: admin dashboard + barrister view
 │   ├── js/vendor/          supabase-js 2.57.4 (MIT)
 │   └── img/                Logo, favicons, og-share.jpg (1200×630)
 └── docs/
@@ -86,20 +88,43 @@ row-level security in the database decides what each visitor can see.
 
 How it works:
 
-- **Students** submit a case on `/legal-aid.html` with their 11-digit FUTO matric number.
-  They get a reference number such as `FBA-26-7F3A9C`. A student can submit at most three
-  cases in 24 hours. Students can't read the cases table. They can only check one case,
-  by giving both its reference number and their matric number.
-- **Admins** sign in at `/admin/`. From there they assign a student barrister and change
-  the case status. They can also write an update the student will see and keep private
-  notes. The barrister's name, email and phone are shown to the student once assigned.
+- **Students** browse `/barristers.html` and choose a barrister, or let the FBA choose. They
+  submit a case on `/legal-aid.html` with their 11-digit FUTO matric number and, if filed,
+  their SUG Judiciary suit number. They get a reference number such as `FBA-26-7F3A9C`.
+  A student can submit at most three cases in 24 hours. Students check their case with
+  reference number + matric number. They never have an account or see other cases.
+- **Barristers** sign in at `/admin/`. Under **Requests** they accept or decline cases from
+  students who chose them. Accepting reveals the student's contact details, and the
+  student then sees the barrister's. Declining sends the case back so the student can
+  choose someone else from their status page. Barristers update their case status and
+  notes, and edit their own profile and photo. Unticking "I'm taking new cases" hides
+  them from the choice list.
+- **Admins** see every case in `/admin/`. "Waiting for barrister" means the student's
+  choice hasn't answered yet. Admins can assign or reassign any case; an admin assignment
+  takes effect straight away. They also manage barrister profiles and send login invites.
 - **Blog & articles**: admins write posts in the dashboard using simple Markdown
   (`## heading`, `**bold**`, `*italic*`, `[link](https://…)`, lists, `> quote`). Raw HTML
   is shown as text, never run. Drafts stay private until "Published" is ticked.
 - **Case archive**: from a case, "Write archive summary" starts an anonymised summary.
   Nothing is public until it is published, and the admin must remove identifying details.
 
+Invites are sent by the `invite-user` Supabase Edge Function
+(`supabase/functions/invite-user/`). It checks that the caller is an admin before using
+the service key, so the key never reaches the browser.
+
+### Adding a barrister
+
+1. In `/admin/` → **Barristers** → **Add barrister**. Fill in their name and email (photo,
+   areas and bio are optional; they can add these themselves), then save.
+2. Open them again and tap **Send login invite**.
+3. They open the email, set a password, and land in the barrister view. Their account is
+   linked to the profile automatically by matching the email address.
+
 ### Adding an administrator
+
+Signed-in admins can use **Barristers → Invite an admin** in `/admin/`.
+
+The very first admin has to be added in the Supabase dashboard:
 
 1. Supabase dashboard → **Authentication → Users → Invite user**, and enter their email.
 2. Supabase dashboard → **SQL Editor**, run:
@@ -158,8 +183,8 @@ Any group can be linked to directly, e.g.
 - All copy in the About, Executives and Constitutions sections is drawn from the FBA
   Constitution (2020/2021 review) and the SUG Constitution 2025. Nothing is invented.
 - Weekly note titles come from the first heading of each PDF.
-- The contact email `futobarassociation@gmail.com` is a placeholder — replace it in the
-  footer of every page, in `assets/js/fba.js`, in the JSON-LD `contactPoint` blocks, and in `llms.txt`.
+- The official contact email is `futobarassociationofficial@gmail.com`. It appears in the
+  footer of every page, in `assets/js/fba.js`, in the JSON-LD `contactPoint` blocks and in `llms.txt`.
 
 ## Verified
 

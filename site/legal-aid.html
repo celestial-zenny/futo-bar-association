@@ -103,7 +103,7 @@
       </nav>
       <p class="eyebrow">Pro bono legal aid clinic</p>
       <h1>Report a legal problem</h1>
-      <p>Facing a legal problem as a FUTO student? Tell us about it. The FBA Legal Aid Clinic will assign you a student barrister, free of charge, to advise you and help you take the next step.</p>
+      <p>Facing a legal problem as a FUTO student? Choose a student barrister of the FUTO Bar Association to represent you, free of charge, or let the FBA choose one for you.</p>
     </div>
   </div>
 
@@ -111,20 +111,20 @@
     <div class="wrap">
       <div class="section__head">
         <h2 id="how-title">How the clinic works</h2>
-        <p class="lede">Every report is read by the clinic's administrators and matched with a student barrister of the association.</p>
+        <p class="lede">You choose who represents you. The barrister you pick accepts the case, and the clinic's administrators keep an eye on every report.</p>
       </div>
       <ol class="steps">
         <li class="pillar">
-          <h3>1. Tell us what happened</h3>
-          <p>Fill in the form below with your details and a clear account of the problem. You will get a reference number straight away.</p>
+          <h3>1. Choose a barrister</h3>
+          <p>Read the <a href="/barristers.html">barrister profiles</a> and pick the one you want, or let the FBA choose for you.</p>
         </li>
         <li class="pillar">
-          <h3>2. We assign a barrister</h3>
-          <p>An administrator reviews your report and assigns a student barrister suited to the matter as soon as possible.</p>
+          <h3>2. Tell us what happened</h3>
+          <p>Fill in the form below. You get a reference number straight away, and your barrister is asked to accept the case.</p>
         </li>
         <li class="pillar">
           <h3>3. Follow your case</h3>
-          <p>Use your reference and matric number to check the status of your case and see who your barrister is and how to reach them.</p>
+          <p>Check your case status with your reference and matric number. Once your barrister accepts, you'll see how to reach them. If they can't take it, choose someone else.</p>
         </li>
       </ol>
       <div class="note">
@@ -184,6 +184,18 @@
         </fieldset>
 
         <fieldset>
+          <legend>Your barrister</legend>
+          <div class="field">
+            <label for="cf-barrister">Who should represent you?</label>
+            <select id="cf-barrister" name="barrister_id" data-barrister-select aria-describedby="cf-barrister-hint">
+              <option value="">Let the FBA choose for me</option>
+            </select>
+            <p class="field__hint" id="cf-barrister-hint"><a href="/barristers.html">Read the barrister profiles</a> before choosing. Only barristers taking new cases are listed.</p>
+          </div>
+          <div data-barrister-preview></div>
+        </fieldset>
+
+        <fieldset>
           <legend>Your problem</legend>
           <div class="field">
             <label for="cf-category">What is it about?</label>
@@ -200,6 +212,11 @@
             <label for="cf-desc">What happened?</label>
             <textarea id="cf-desc" name="description" rows="8" required minlength="20" maxlength="8000" aria-describedby="cf-desc-hint"></textarea>
             <p class="field__hint" id="cf-desc-hint">Include dates, who was involved, what you have already done and what outcome you want. Don't upload documents yet; your barrister will ask for them.</p>
+          </div>
+          <div class="field">
+            <label for="cf-suit">SUG Judiciary suit number (optional)</label>
+            <input id="cf-suit" name="judiciary_suit" type="text" maxlength="60" autocomplete="off" aria-describedby="cf-suit-hint">
+            <p class="field__hint" id="cf-suit-hint">If you have already filed this matter with the SUG Judiciary, enter its suit or file number.</p>
           </div>
           <div class="field field--honey" aria-hidden="true">
             <label for="cf-website">Leave this empty</label>
@@ -218,7 +235,8 @@
         <p class="eyebrow">Case received</p>
         <h3>Your reference number</h3>
         <p class="receipt__ref" data-receipt-ref></p>
-        <p>Write this down or take a screenshot. You will need it, together with your matric number, to check the progress of your case below. An administrator will assign a barrister as soon as possible.</p>
+        <p>Write this down or take a screenshot. You will need it, together with your matric number, to check the progress of your case below.</p>
+        <p data-receipt-next></p>
         <button class="btn btn--outline" type="button" data-receipt-again>Submit another case</button>
       </div>
     </div>
@@ -271,8 +289,10 @@
           <li><a href="/constitutions.html">Constitutions</a></li>
           <li><a href="/study-materials.html">Study Materials</a></li>
           <li><a href="/legal-aid.html">Legal Aid</a></li>
+          <li><a href="/barristers.html">Barristers</a></li>
           <li><a href="/blog.html">Blog</a></li>
           <li><a href="/archive.html">Archive</a></li>
+          <li><a href="/admin/">Barrister &amp; admin sign-in</a></li>
         </ul>
       </div>
 
@@ -294,7 +314,7 @@
           Federal University of Technology<br>
           P.M.B. 1526, Owerri<br>
           Imo State, Nigeria<br><br>
-          <a href="mailto:futobarassociation@gmail.com">futobarassociation@gmail.com</a>
+          <a href="mailto:futobarassociationofficial@gmail.com">futobarassociationofficial@gmail.com</a>
         </address>
       </div>
     </div>

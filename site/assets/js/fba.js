@@ -26,8 +26,11 @@
     other: "Something else"
   };
 
+  /* "requested" is not stored: the database reports it for a 'new' case
+     whose student has chosen a barrister who hasn't answered yet. */
   var STATUSES = {
     new: "Received",
+    requested: "Waiting for barrister",
     assigned: "Barrister assigned",
     in_progress: "In progress",
     resolved: "Resolved",
@@ -132,6 +135,42 @@
     return html.join("\n").replace(/<\/blockquote>\n<blockquote>/g, "");
   }
 
+  // Status as students and barristers see it.
+  function caseStatus(row) {
+    return row.status === "new" && row.barrister_id ? "requested" : row.status;
+  }
+
+  function shortCategory(key) {
+    return (CATEGORIES[key] || CATEGORIES.other).replace(/\s*\(.*\)$/, "");
+  }
+
+  function initials(name) {
+    return String(name || "").split(/\s+/).filter(Boolean).slice(0, 2)
+      .map(function (part) { return part.charAt(0).toUpperCase(); }).join("");
+  }
+
+  /* Public profile card. `action` is optional extra HTML (e.g. a button). */
+  function barristerCard(b, action) {
+    var photo = b.photo_url && /^https:\/\//.test(b.photo_url)
+      ? '<img class="barrister__photo" src="' + esc(b.photo_url) + '" width="96" height="96" alt="Photo of ' + esc(b.full_name) + '" loading="lazy">'
+      : '<span class="barrister__photo barrister__photo--initials" aria-hidden="true">' + esc(initials(b.full_name)) + "</span>";
+    var areas = (b.areas || []).filter(function (a) { return CATEGORIES[a]; });
+    return '<article class="barrister card">' + photo +
+      '<div class="barrister__body">' +
+      "<h3>" + esc(b.full_name) + "</h3>" +
+      (b.level ? '<p class="barrister__level">' + esc(b.level) + "</p>" : "") +
+      '<p class="barrister__availability barrister__availability--' + (b.active ? "on" : "off") + '">' +
+      (b.active ? "Taking new cases" : "Not taking new cases right now") +
+      (typeof b.open_cases === "number" ? " · " + b.open_cases + " active case" + (b.open_cases === 1 ? "" : "s") : "") +
+      "</p>" +
+      (areas.length ? '<ul class="barrister__areas" aria-label="Areas">' + areas.map(function (a) {
+        return '<li class="tag">' + esc(shortCategory(a)) + "</li>";
+      }).join("") + "</ul>" : "") +
+      (b.bio ? '<p class="barrister__bio">' + esc(b.bio) + "</p>" : "") +
+      (action || "") +
+      "</div></article>";
+  }
+
   function friendlyError(error) {
     if (!error) return "Something went wrong. Please try again.";
     // Messages raised deliberately by the database are written for students.
@@ -139,7 +178,7 @@
     if (/fetch|network/i.test(error.message || "")) {
       return "We couldn't reach the server. Check your connection and try again.";
     }
-    return "Something went wrong. Please try again, or email futobarassociation@gmail.com.";
+    return "Something went wrong. Please try again, or email futobarassociationofficial@gmail.com.";
   }
 
   window.FBA = {
@@ -151,6 +190,9 @@
     monthKey: monthKey,
     monthLabel: monthLabel,
     markdown: markdown,
+    caseStatus: caseStatus,
+    shortCategory: shortCategory,
+    barristerCard: barristerCard,
     friendlyError: friendlyError
   };
 })();
