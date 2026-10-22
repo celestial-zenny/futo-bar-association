@@ -4,5 +4,6 @@
 User-agent: *
 Allow: /
 Disallow: /404.html
+Disallow: /admin/
 
 Sitemap: https://futobarassociation.org/sitemap.xml
